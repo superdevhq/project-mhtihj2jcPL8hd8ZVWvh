@@ -93,6 +93,11 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Prevent FOUC (Flash of Unstyled Content) */
+  html.js-loading * {
+    transition: none !important;
+  }
 }
 
 /* Custom animations */
@@ -112,16 +117,25 @@
   100% { transform: scale(1); }
 }
 
+/* Only apply animations when not refreshing the page */
 .animate-fade-in {
   animation: fadeIn 0.6s ease-out forwards;
+  animation-play-state: paused;
 }
 
 .animate-slide-up {
   animation: slideUp 0.5s ease-out forwards;
+  animation-play-state: paused;
 }
 
 .animate-pulse-slow {
   animation: pulse 2s infinite;
+}
+
+/* JavaScript will add this class when the page is ready */
+.animations-ready .animate-fade-in,
+.animations-ready .animate-slide-up {
+  animation-play-state: running;
 }
 
 /* Staggered animations for lists */

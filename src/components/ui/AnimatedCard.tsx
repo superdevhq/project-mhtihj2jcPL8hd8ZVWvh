@@ -11,11 +11,27 @@ interface AnimatedCardProps extends CardProps {
 
 const AnimatedCard = React.forwardRef<HTMLDivElement, AnimatedCardProps>(
   ({ className, animateEntry = true, animateHover = true, delay = 0, children, ...props }, ref) => {
+    // Use a ref to track if this is the initial mount
+    const isMounted = useRef(false);
     const [isVisible, setIsVisible] = useState(!animateEntry);
     const cardRef = useRef<HTMLDivElement>(null);
     
+    // Handle delay-based animation
     useEffect(() => {
       if (!animateEntry) return;
+      
+      // Skip animation on initial page load/refresh
+      if (!isMounted.current) {
+        isMounted.current = true;
+        if (window.performance) {
+          // If navigation type is reload or navigate, skip animation
+          const navEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+          if (navEntry && (navEntry.type === 'reload' || navEntry.type === 'navigate')) {
+            setIsVisible(true);
+            return;
+          }
+        }
+      }
       
       const timer = setTimeout(() => {
         setIsVisible(true);
@@ -24,8 +40,9 @@ const AnimatedCard = React.forwardRef<HTMLDivElement, AnimatedCardProps>(
       return () => clearTimeout(timer);
     }, [animateEntry, delay]);
     
+    // Handle intersection observer for scroll-based animation
     useEffect(() => {
-      if (!cardRef.current || !animateEntry) return;
+      if (!cardRef.current || !animateEntry || isVisible) return;
       
       const observer = new IntersectionObserver(
         (entries) => {
@@ -46,14 +63,14 @@ const AnimatedCard = React.forwardRef<HTMLDivElement, AnimatedCardProps>(
           observer.unobserve(cardRef.current);
         }
       };
-    }, [animateEntry]);
+    }, [animateEntry, isVisible]);
     
     return (
       <Card
         ref={cardRef || ref}
         className={cn(
           'transition-all duration-500',
-          animateEntry && 'opacity-0 translate-y-4',
+          animateEntry && !isVisible && 'opacity-0 translate-y-4',
           isVisible && 'opacity-100 translate-y-0',
           animateHover && 'hover:shadow-lg hover:shadow-primary/10 hover:translate-y-[-2px]',
           className
