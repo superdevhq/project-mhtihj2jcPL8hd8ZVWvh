@@ -11,6 +11,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import InvoiceCreate from "./pages/InvoiceCreate";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +67,9 @@ const AppRoutes = () => {
         {/* Protected routes */}
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+        
+        {/* Invoice routes */}
+        <Route path="/invoices/new" element={<ProtectedRoute><InvoiceCreate /></ProtectedRoute>} />
         
         {/* Catch-all route */}
         <Route path="*" element={<NotFound />} />
