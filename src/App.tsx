@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
-import { useEffect } from "react";
+import PageTransition from "@/components/ui/PageTransition";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -55,40 +55,26 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 const AppRoutes = () => {
   const { user } = useAuth();
 
-  // Enable animations after initial render
-  useEffect(() => {
-    // Small delay to ensure DOM is ready
-    const timer = setTimeout(() => {
-      document.documentElement.classList.remove('js-loading');
-      document.documentElement.classList.add('animations-ready');
-    }, 100);
-    
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
-    <Routes>
-      {/* Public routes */}
-      <Route path="/" element={<Index />} />
-      <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Auth />} />
-      <Route path="/register" element={user ? <Navigate to="/dashboard" replace /> : <Auth />} />
-      
-      {/* Protected routes */}
-      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
-      
-      {/* Catch-all route */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <PageTransition>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/" element={<Index />} />
+        <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Auth />} />
+        <Route path="/register" element={user ? <Navigate to="/dashboard" replace /> : <Auth />} />
+        
+        {/* Protected routes */}
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+        
+        {/* Catch-all route */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </PageTransition>
   );
 };
 
 const App = () => {
-  // Add js-loading class to prevent FOUC
-  useEffect(() => {
-    document.documentElement.classList.add('js-loading');
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
