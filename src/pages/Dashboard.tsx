@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -27,6 +26,8 @@ const mockInvoices = [
   { id: '3', number: 'INV-003', customer: 'Stark Industries', amount: 3200.75, status: 'overdue', dueDate: '2023-05-10' },
   { id: '4', number: 'INV-004', customer: 'Wayne Enterprises', amount: 1750.25, status: 'draft', dueDate: '2023-05-25' },
 ];
+
+// ... keep existing code (useState, useEffect, formatCurrency, getStatusColor, isInTrial, getDaysLeft functions)
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -98,6 +99,22 @@ const Dashboard = () => {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
+  // Get invoice number style based on status
+  const getInvoiceNumberStyle = (status: string) => {
+    switch (status) {
+      case 'paid':
+        return 'bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent font-medium';
+      case 'pending':
+        return 'bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent font-medium';
+      case 'overdue':
+        return 'bg-gradient-to-r from-red-500 to-rose-500 bg-clip-text text-transparent font-medium';
+      case 'draft':
+        return 'bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent font-medium';
+      default:
+        return 'text-primary font-medium';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -135,6 +152,7 @@ const Dashboard = () => {
           
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {/* ... keep existing code (Stats Cards) */}
             <AnimatedCard className="p-6 animate-fade-in" style={{ animationDelay: '0.2s' }}>
               {isLoading ? (
                 <div className="flex items-center justify-center h-24">
@@ -259,7 +277,7 @@ const Dashboard = () => {
                         {mockInvoices.map((invoice) => (
                           <tr key={invoice.id} className="border-b border-border hover:bg-muted/30 transition-colors">
                             <td className="p-4">
-                              <Link to={`/invoices/${invoice.id}`} className="text-primary hover:underline">
+                              <Link to={`/invoices/${invoice.id}`} className={`hover:opacity-80 transition-opacity ${getInvoiceNumberStyle(invoice.status)}`}>
                                 {invoice.number}
                               </Link>
                             </td>
@@ -291,6 +309,7 @@ const Dashboard = () => {
             
             {/* Quick Actions */}
             <div>
+              {/* ... keep existing code (Quick Actions and Customers Card) */}
               <AnimatedCard className="animate-fade-in" style={{ animationDelay: '0.7s' }}>
                 <div className="p-6 border-b border-border">
                   <h2 className="text-xl font-semibold">Quick Actions</h2>
