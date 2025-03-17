@@ -14,12 +14,9 @@ const AnimatedCard = React.forwardRef<HTMLDivElement, AnimatedCardProps>(
     const [isVisible, setIsVisible] = useState(false);
     const cardRef = useRef<HTMLDivElement>(null);
     
-    // Check if we're in the initial page load
-    const isInitialLoad = document.documentElement.classList.contains('no-animations');
-    
-    // Set visible immediately if animations are disabled
+    // Set visible after delay
     useEffect(() => {
-      if (isInitialLoad || !animateEntry) {
+      if (!animateEntry) {
         setIsVisible(true);
         return;
       }
@@ -29,11 +26,11 @@ const AnimatedCard = React.forwardRef<HTMLDivElement, AnimatedCardProps>(
       }, delay);
       
       return () => clearTimeout(timer);
-    }, [animateEntry, delay, isInitialLoad]);
+    }, [animateEntry, delay]);
     
     // Set up intersection observer for scroll animations
     useEffect(() => {
-      if (!cardRef.current || !animateEntry || isInitialLoad) return;
+      if (!cardRef.current || !animateEntry || isVisible) return;
       
       const observer = new IntersectionObserver(
         (entries) => {
@@ -54,15 +51,15 @@ const AnimatedCard = React.forwardRef<HTMLDivElement, AnimatedCardProps>(
           observer.unobserve(cardRef.current);
         }
       };
-    }, [animateEntry, isInitialLoad]);
+    }, [animateEntry, isVisible]);
     
     return (
       <Card
         ref={cardRef || ref}
         className={cn(
           'transition-all duration-500',
-          animateEntry && !isInitialLoad && !isVisible && 'opacity-0 translate-y-4',
-          (isVisible || isInitialLoad) && 'opacity-100 translate-y-0',
+          animateEntry && !isVisible && 'opacity-0 translate-y-4',
+          isVisible && 'opacity-100 translate-y-0',
           animateHover && 'hover:shadow-lg hover:shadow-primary/10 hover:translate-y-[-2px]',
           className
         )}
